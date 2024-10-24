@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://ckixnxuy4l8ha"]
+
+[ext_resource type="Script" path="res://Globals.gd" id="1_hdyks"]
+[ext_resource type="PackedScene" uid="uid://tfo257lp8324" path="res://game_controller.tscn" id="1_lt4b7"]
+[ext_resource type="Script" path="res://game_controller.gd" id="3_aua3w"]
+
+[node name="Game" type="Node2D"]
+y_sort_enabled = true
+
+[node name="game_controller" parent="." instance=ExtResource("1_lt4b7")]
+script = ExtResource("3_aua3w")
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("1_hdyks")

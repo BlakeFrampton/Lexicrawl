@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://cc0a6kii3t3oq"]
+
+[ext_resource type="Script" path="res://board.gd" id="1_bqo4b"]
+[ext_resource type="Script" path="res://grid.gd" id="2_4if4x"]
+
+[node name="Board" type="Node2D"]
+z_index = -1
+script = ExtResource("1_bqo4b")
+
+[node name="Grid" type="Node" parent="."]
+script = ExtResource("2_4if4x")

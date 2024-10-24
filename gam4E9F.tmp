@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://tfo257lp8324"]
+
+[ext_resource type="Script" path="res://game_controller.gd" id="1_w0gwh"]
+[ext_resource type="PackedScene" uid="uid://cc0a6kii3t3oq" path="res://board.tscn" id="2_ehfs0"]
+
+[node name="game_controller" type="Node2D"]
+script = ExtResource("1_w0gwh")
+
+[node name="Board" parent="." instance=ExtResource("2_ehfs0")]

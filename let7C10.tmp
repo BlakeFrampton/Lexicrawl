@@ -1,0 +1,41 @@
+[gd_scene load_steps=4 format=3 uid="uid://csgtdhbg4yevc"]
+
+[ext_resource type="Script" path="res://letter_tile.gd" id="1_jgmms"]
+[ext_resource type="Texture2D" uid="uid://dtqt3tejufvsh" path="res://ScrabbleTile.png" id="1_v2jmc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g8sbh"]
+size = Vector2(256, 256)
+
+[node name="letter_tile" type="Node2D"]
+z_index = 2
+scale = Vector2(0.25, 0.25)
+script = ExtResource("1_jgmms")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_v2jmc")
+
+[node name="Letter" type="Label" parent="Sprite2D"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -128.0
+offset_right = 128.0
+offset_bottom = 128.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+theme_override_colors/font_color = Color(0.440867, 0.32644, 0.105587, 1)
+theme_override_font_sizes/font_size = 375
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_g8sbh")
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
