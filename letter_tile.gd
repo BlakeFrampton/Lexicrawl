@@ -1,20 +1,15 @@
 extends Node2D
-var CharList = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S"]
 var dragging = false
 var dragTileStartPosition
 var dragMouseStartPosition
 var pointValue = -1
 var currentBoardTile
 
-func _ready():
-	var rng = RandomNumberGenerator.new()
-	rng.randomize()
-	var index = rng.randi_range(0,CharList.size()-1)
-	%Letter.text = CharList[index]
 
 func _process(delta):
 	if dragging:
-		move_tile()
+		if currentBoardTile == null or currentBoardTile.get_occupancy() != "Occupied":
+			move_tile()
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #Detects button pressed or lifted
@@ -41,21 +36,30 @@ func move_tile():
 	var TILESIZE = Globals.get_tileSize()
 	var mousePos = get_global_mouse_position()
 	var grid = get_node("/root/Game/game_controller/Board/Grid")
-	if not currentBoardTile == null:
-		currentBoardTile.set_occupied(false)
+	var stillOnTile = false
 	position = dragTileStartPosition + (get_global_mouse_position() - dragMouseStartPosition)
 	for boardTile in grid.get_children():
 		var boardTileRect = boardTile.get_child(0)
-		if not boardTile.get_occupied():
+		if boardTile.get_occupancy() == "Empty":
 			if (boardTileRect.position.x<= mousePos.x && boardTileRect.position.x + TILESIZE >= mousePos.x && boardTileRect.position.y<= mousePos.y && boardTileRect.position.y+ TILESIZE  >= mousePos.y):
-				position = Vector2(boardTileRect.position.x + TILESIZE /2, boardTileRect.position.y + TILESIZE /2)
+				if not currentBoardTile == null:
+					currentBoardTile.set_letterTile(null)
+					currentBoardTile.set_occupancy("Empty")
 				currentBoardTile = boardTile
-				currentBoardTile.set_occupied(true)
+				currentBoardTile.set_letterTile(self)
+				currentBoardTile.set_occupancy("New")
+				currentBoardTile.check_play.emit()
+		else:
+			if boardTile == currentBoardTile:
+							if (boardTileRect.position.x<= mousePos.x && boardTileRect.position.x + TILESIZE >= mousePos.x && boardTileRect.position.y<= mousePos.y && boardTileRect.position.y+ TILESIZE  >= mousePos.y):
+								stillOnTile = true
+	if stillOnTile and not currentBoardTile == null:
+		position = Vector2(currentBoardTile.get_child(0).position.x + TILESIZE /2, currentBoardTile.get_child(0).position.y + TILESIZE /2)
 
 func set_value(value):
-	if value == "Blank":
+	if value == " ":
 		pointValue = 0
-		%Letter.text = ""
+		%Letter.text = " "
 	else:
 		%Letter.text = value
 	if value == "D" or value == "G":
@@ -70,3 +74,6 @@ func set_value(value):
 		pointValue = 8
 	elif value == "Q" or value == "Z":
 		pointValue = 10
+
+func get_letter():
+	return %Letter.text

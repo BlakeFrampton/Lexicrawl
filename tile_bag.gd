@@ -36,12 +36,12 @@ func add_standard_tiles():
 	add_tiles("X", 1)
 	add_tiles("Y", 2)
 	add_tiles("Z", 1)
-	add_tiles("Blank", 2)
+	add_tiles(" ", 2)
 
 func get_tile():
 	var rnd = RandomNumberGenerator.new()
 	randomize()
-	var index = rnd.randi_range(0, len(Tiles))
+	var index = rnd.randi_range(0, len(Tiles) - 1)
 	var tileValue = Tiles[index]
 	Tiles.remove_at(index)
 	

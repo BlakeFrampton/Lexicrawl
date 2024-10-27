@@ -12,3 +12,11 @@ script = ExtResource("3_aua3w")
 
 [node name="Node" type="Node" parent="."]
 script = ExtResource("1_hdyks")
+
+[node name="Button" type="Button" parent="."]
+offset_left = 881.0
+offset_top = 214.0
+offset_right = 1015.0
+offset_bottom = 273.0
+
+[connection signal="pressed" from="Button" to="game_controller" method="_on_button_pressed"]

@@ -9,6 +9,7 @@ const TRIPLEWORDCOLOUR = Color(0xd95258FF)
 const DOUBLEWORDCOLOUR = Color(0xe79ea9FF)
 const DOUBLELETTERCOLOUR = Color(0xa2cceeFF)
 const TRIPLELETTERCOLOUR = Color(0x0185c6FF)
+var wordsToScore = []
 
 
 func _ready():
@@ -23,6 +24,7 @@ func _ready():
 			boardTiles[x][y].get_node("ColorRect").position=Vector2(startingX + x * (TILESIZE + TILEBORDER), startingY + y * (TILESIZE + TILEBORDER))
 			boardTiles[x][y].get_node("ColorRect").size = Vector2(TILESIZE, TILESIZE)
 			boardTiles[x][y].get_node("ColorRect").color = setBoardTileColour(boardTiles, x, y)
+			boardTiles[x][y].check_play.connect(check_play)
 
 			add_child(boardTiles[x][y])
 
@@ -49,3 +51,133 @@ func setBoardTileColour(boardTiles, x, y):
 		return DOUBLEWORDCOLOUR
 		boardTiles[x][y].tileType = "2W"
 	return STANDARDBOARDCOLOUR
+	
+func check_play():
+	var column = -1
+	var row = -1
+	var horizontal = true
+	var vertical = true
+	var occupiedTiles = []
+	var newTiles = []
+	var xCoord = -1
+	var yCoord= -1
+	
+	# Check if all new tiles are in one line
+	for x in range(GRIDSIZE):
+		for y in range(GRIDSIZE):
+			if boardTiles[x][y].get_occupancy() != "Empty":
+				occupiedTiles.append(boardTiles[x][y])
+				if boardTiles[x][y].get_occupancy() == "New":
+					newTiles.append(0)
+					newTiles[len(newTiles)-1] = boardTiles[x][y]
+					xCoord = x
+					yCoord = y
+					if column == -1:
+						column = x
+					elif column != x:
+						vertical = false
+					if row == -1:
+						row = y
+					elif row != y:
+						horizontal = false
+	
+	if not (horizontal or vertical):
+		wordsToScore = []
+		return
+	
+	
+	if is_first_turn():
+		if boardTiles[7][7].get_occupancy() != "New":
+			wordsToScore = []
+			return
+	else:
+		#Check that a new tile is next to an occupied tile
+		var adjacentToOccupied = false
+		for tile in newTiles:
+			var coords = get_coordinates(tile)
+			if not adjacentToOccupied:
+				if boardTiles[min(coords[0] + 1, GRIDSIZE -1)][coords[1]].get_occupancy() == "Occupied":
+					adjacentToOccupied = true
+				elif boardTiles[max(coords[0] - 1, 0)][coords[1]].get_occupancy() == "Occupied":
+					adjacentToOccupied = true
+				elif boardTiles[coords[0]][min(coords[1] + 1, GRIDSIZE -1)].get_occupancy() == "Occupied":
+					adjacentToOccupied = true
+				elif boardTiles[coords[0]][max(coords[1] - 1, 0)].get_occupancy() == "Occupied":
+					adjacentToOccupied = true
+		if not adjacentToOccupied:
+			wordsToScore = []
+			return
+	
+	var playedWords = []
+	if horizontal:
+		playedWords = find_played_words(1,0, newTiles)
+	else:
+		playedWords = find_played_words(0,1, newTiles)
+
+	wordsToScore = playedWords.duplicate()
+
+func is_first_turn():
+	for x in range(GRIDSIZE):
+		for y in range(GRIDSIZE):
+			if boardTiles[x][y].get_occupancy() == "Occupied":
+				return false
+	return true
+
+func get_coordinates(boardTile):
+	for x in range(GRIDSIZE):
+		for y in range(GRIDSIZE):
+			if boardTiles[x][y] == boardTile:
+				return ([x,y])
+	return ([-1,-1])
+
+func find_played_words(deltaX, deltaY, newTiles):
+	var coords = get_coordinates(newTiles[0])
+	var words = []
+	var newTilesEncountered = 0
+	
+	while coords[0] -deltaX >= 0 and coords[1] - deltaY >= 0 and boardTiles[coords[0] - deltaX][coords[1] - deltaY].get_occupancy() != "Empty":
+		coords[0] -= deltaX
+		coords[1] -= deltaY
+	
+	var startCoords = coords.duplicate()
+	var word = boardTiles[coords[0]][coords[1]].get_letterTile().get_letter()
+	if boardTiles[coords[0]][coords[1]].get_occupancy() == "New":
+		newTilesEncountered += 1
+	while coords[0] + deltaX < GRIDSIZE and coords[1] + deltaY < GRIDSIZE and boardTiles[coords[0] + deltaX][coords[1] + deltaY].get_occupancy() != "Empty":
+		coords[0] += deltaX
+		coords[1] += deltaY
+		word += boardTiles[coords[0]][coords[1]].get_letterTile().get_letter()
+		if boardTiles[coords[0]][coords[1]].get_occupancy() == "New":
+			newTilesEncountered += 1
+	
+	if newTilesEncountered < len(newTiles):
+		return []
+	
+	if len(word) >= 2:
+		words.append(word)
+		
+	for i in range(len(word)):
+		coords = startCoords.duplicate()
+		coords[0] += deltaX * i
+		coords[1] += deltaY * i
+		word = ""
+		while coords[0] - deltaY >= 0 and coords[1] - deltaX >= 0 and boardTiles[coords[0] - deltaY][coords[1] - deltaX].get_occupancy() != "Empty": #Delta x and y are switched to check for perpendicular attached words
+			coords[0] -= deltaY
+			coords[1] -= deltaX
+		word += boardTiles[coords[0]][coords[1]].get_letterTile().get_letter()
+		while coords[0] + deltaY < GRIDSIZE and coords[1] + deltaX < GRIDSIZE and boardTiles[coords[0] + deltaY][coords[1] + deltaX].get_occupancy() != "Empty":
+			coords[0] += deltaY
+			coords[1] += deltaX
+			word += boardTiles[coords[0]][coords[1]].get_letterTile().get_letter()
+		if len(word) >= 2:
+			words.append(word)
+	
+	return words
+	
+func submit_play():
+	print(wordsToScore)
+	if wordsToScore != []:
+		for x in range(GRIDSIZE):
+			for y in range(GRIDSIZE):
+				if boardTiles[x][y].get_occupancy() == "New":
+					boardTiles[x][y].set_occupancy("Occupied")
