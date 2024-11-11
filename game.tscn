@@ -14,9 +14,11 @@ script = ExtResource("3_aua3w")
 script = ExtResource("1_hdyks")
 
 [node name="Button" type="Button" parent="."]
-offset_left = 881.0
-offset_top = 214.0
-offset_right = 1015.0
-offset_bottom = 273.0
+offset_left = 2160.0
+offset_top = 565.0
+offset_right = 2486.0
+offset_bottom = 733.0
+theme_override_font_sizes/font_size = 76
+text = "SUBMIT"
 
 [connection signal="pressed" from="Button" to="game_controller" method="_on_button_pressed"]
