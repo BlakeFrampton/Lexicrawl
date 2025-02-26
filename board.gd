@@ -12,3 +12,4 @@ func _ready():
 	backgroundRect.size = Vector2(GRIDSIZE * (TILESIZE + TILEBORDER), GRIDSIZE * (TILESIZE + TILEBORDER))
 	backgroundRect.color = Color(BACKGROUNDCOLOUR)
 	add_child(backgroundRect) #Add background to Board, so grid only contains playable squares
+	get_node("Grid").set_word_list("res://CSW24.txt")

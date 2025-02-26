@@ -2,8 +2,8 @@ extends Node2D
 var dragging = false
 var dragTileStartPosition
 var dragMouseStartPosition
-var pointValue = -1
 var currentBoardTile
+var letter;
 
 
 func _process(delta):
@@ -48,6 +48,7 @@ func move_tile():
 				currentBoardTile = boardTile
 				currentBoardTile.set_letterTile(self)
 				currentBoardTile.set_occupancy("New")
+				stillOnTile = true
 				currentBoardTile.check_play.emit()
 		else:
 			if boardTile == currentBoardTile:
@@ -55,25 +56,39 @@ func move_tile():
 								stillOnTile = true
 	if stillOnTile and not currentBoardTile == null:
 		position = Vector2(currentBoardTile.get_child(0).position.x + TILESIZE /2, currentBoardTile.get_child(0).position.y + TILESIZE /2)
+	if (not currentBoardTile == null) and !stillOnTile:
+		currentBoardTile.set_letterTile(null)
+		currentBoardTile.set_occupancy("Empty")
+		currentBoardTile.check_play.emit()
+		currentBoardTile = null
 
-func set_value(value):
-	if value == " ":
+func get_value():
+	var pointValue;
+	if letter == " ":
 		pointValue = 0
+	if letter == "D" or letter == "G":
+		pointValue = 2
+	elif letter == "B" or letter == "C" or letter == "M" or letter == "P":
+		pointValue = 3
+	elif letter == "F" or letter == "H" or letter == "V" or letter == "W" or letter == "Y":
+		pointValue = 4
+	elif letter == "K":
+		pointValue = 5
+	elif letter == "J" or letter == "X":
+		pointValue = 8
+	elif letter == "Q" or letter == "Z":
+		pointValue = 10
+	else:
+		pointValue = -1;
+	
+	return pointValue;
+
+func set_letter(tileLetter):
+	letter = tileLetter;
+	if letter == "blank":
 		%Letter.text = " "
 	else:
-		%Letter.text = value
-	if value == "D" or value == "G":
-		pointValue = 2
-	elif value == "B" or value == "C" or value == "M" or value == "P":
-		pointValue = 3
-	elif value == "F" or value == "H" or value == "V" or value == "W" or value == "Y":
-		pointValue = 4
-	elif value == "K":
-		pointValue = 5
-	elif value == "J" or value == "X":
-		pointValue = 8
-	elif value == "Q" or value == "Z":
-		pointValue = 10
+		%Letter.text = letter;
 
 func get_letter():
 	return %Letter.text

@@ -9,7 +9,7 @@ const TRIPLEWORDCOLOUR = Color(0xd95258FF)
 const DOUBLEWORDCOLOUR = Color(0xe79ea9FF)
 const DOUBLELETTERCOLOUR = Color(0xa2cceeFF)
 const TRIPLELETTERCOLOUR = Color(0x0185c6FF)
-var wordsToScore = []
+var wordList = []
 
 
 func _ready():
@@ -24,10 +24,20 @@ func _ready():
 			boardTiles[x][y].get_node("ColorRect").position=Vector2(startingX + x * (TILESIZE + TILEBORDER), startingY + y * (TILESIZE + TILEBORDER))
 			boardTiles[x][y].get_node("ColorRect").size = Vector2(TILESIZE, TILESIZE)
 			boardTiles[x][y].get_node("ColorRect").color = setBoardTileColour(boardTiles, x, y)
-			boardTiles[x][y].check_play.connect(check_play)
+			boardTiles[x][y].check_play.connect(get_words_to_score)
 
 			add_child(boardTiles[x][y])
 
+func set_word_list(filePath):
+	var file = FileAccess.open(filePath, FileAccess.READ)
+	var words = []
+	
+	if file:
+		while not file.eof_reached():
+			var line = file.get_line()
+			words.append(line)
+	
+	wordList = words
 
 func setBoardTileColour(boardTiles, x, y):
 	if (min(x, y) == 0 and max(x,y) == 3) or (min(x, y) == 0 and max(x,y) == 11) or (min(x, y) == 3 and max(x,y) == 14) or (min(x, y) == 11 and max(x,y) == 14): #outer ring
@@ -52,7 +62,7 @@ func setBoardTileColour(boardTiles, x, y):
 		boardTiles[x][y].tileType = "2W"
 	return STANDARDBOARDCOLOUR
 	
-func check_play():
+func get_words_to_score():
 	var column = -1
 	var row = -1
 	var horizontal = true
@@ -61,6 +71,7 @@ func check_play():
 	var newTiles = []
 	var xCoord = -1
 	var yCoord= -1
+	var wordsToScore = []
 	
 	# Check if all new tiles are in one line
 	for x in range(GRIDSIZE):
@@ -82,14 +93,12 @@ func check_play():
 						horizontal = false
 	
 	if not (horizontal or vertical):
-		wordsToScore = []
-		return
+		return []
 	
 	
 	if is_first_turn():
 		if boardTiles[7][7].get_occupancy() != "New":
-			wordsToScore = []
-			return
+			return []
 	else:
 		#Check that a new tile is next to an occupied tile
 		var adjacentToOccupied = false
@@ -105,16 +114,21 @@ func check_play():
 				elif boardTiles[coords[0]][max(coords[1] - 1, 0)].get_occupancy() == "Occupied":
 					adjacentToOccupied = true
 		if not adjacentToOccupied:
-			wordsToScore = []
-			return
+			return []
 	
 	var playedWords = []
 	if horizontal:
 		playedWords = find_played_words(1,0, newTiles)
 	else:
 		playedWords = find_played_words(0,1, newTiles)
-
+	
 	wordsToScore = playedWords.duplicate()
+	
+	for word in wordsToScore:
+		if not word in wordList:
+			return []
+	
+	return wordsToScore
 
 func is_first_turn():
 	for x in range(GRIDSIZE):
@@ -175,6 +189,7 @@ func find_played_words(deltaX, deltaY, newTiles):
 	return words
 	
 func submit_play():
+	var wordsToScore = get_words_to_score()
 	print(wordsToScore)
 	if wordsToScore != []:
 		for x in range(GRIDSIZE):

@@ -46,5 +46,5 @@ func get_tile():
 	Tiles.remove_at(index)
 	
 	var letter_tile = load("res://letter_tile.tscn").instantiate()
-	letter_tile.set_value(tileValue)
+	letter_tile.set_letter(tileValue)
 	return letter_tile
