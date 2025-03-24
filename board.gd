@@ -45,7 +45,7 @@ func show_player_rack(playerRack):
 	self.playerRack = playerRack
 	var startingY = 9 * (DisplayServer.screen_get_size().y) / 10 - TILESIZE
 	var startingX = (DisplayServer.screen_get_size().x - playerRackSize * (TILESIZE + TILEBORDER)) / 2
-	for i in range(playerRackSize):
+	for i in range(len(playerRack)):
 		var tile = self.playerRack[i]
 		if tile.get_parent() != self:
 			add_child(tile)

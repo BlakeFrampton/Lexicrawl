@@ -27,7 +27,10 @@ func get_rack():
 func draw_tiles():
 	for i in range(rackSize - len(rack)):
 		var next_tile = tileBag.get_tile()
-		rack.append(next_tile)
+		if next_tile:
+			rack.append(next_tile)
+		else:
+			print("Uh oh no more tiles")
 
 func use_tiles(tilesUsed):
 	for tile in tilesUsed:

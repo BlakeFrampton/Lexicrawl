@@ -2,6 +2,8 @@ extends Node2D
 
 var TILESIZE = null
 
+var title = ""
+
 var exchanging = false
 var exchangeThisTile = false
 var dragTileStartPosition
@@ -12,9 +14,11 @@ var value = 0
 var multiplier = 1
 var player
 var dragging = false
+var awaitingLetter = false
 
-func set_values(label, tileSize, value, multiplier, player=null):
+func set_values(title, label, tileSize, value, multiplier, player=null):
 	TILESIZE = tileSize
+	set_title(title)
 	set_label(label)
 	set_value(value)
 	set_multiplier(multiplier)
@@ -41,6 +45,16 @@ func _input(event):
 		elif player.get_dragging():
 			player.set_dragging(false)
 			dragging = false
+
+func _unhandled_input(event):
+	if awaitingLetter and event is InputEventKey and event.pressed:
+		var letter = OS.get_keycode_string(event.keycode).to_upper()
+		
+		if letter.length() == 1 and letter.is_valid_identifier():  # Ensure it's a valid letter
+			set_label(letter)
+			#status_label.text = "Letter chosen: " + letter
+			awaitingLetter = false  # Stop listening for input
+
 
 func set_exchanging(exchanging):
 	self.exchanging = exchanging
@@ -75,10 +89,8 @@ func move_tile():
 				if not currentBoardTile == null:
 					currentBoardTile.set_letter_tile(null)
 					currentBoardTile.set_occupancy("Empty")
-				currentBoardTile = boardTile
-				currentBoardTile.set_letter_tile(self)
-				currentBoardTile.set_occupancy("New")
 				stillOnTile = true
+				placed_on_board(boardTile)
 		else:
 			if boardTile == currentBoardTile:
 							if (boardTile.position.x<= mousePos.x && boardTile.position.x + TILESIZE >= mousePos.x && boardTile.position.y<= mousePos.y && boardTile.position.y+ TILESIZE  >= mousePos.y):
@@ -89,6 +101,24 @@ func move_tile():
 		currentBoardTile.set_letter_tile(null)
 		currentBoardTile.set_occupancy("Empty")
 		currentBoardTile = null
+
+func placed_on_board(boardTile):
+	currentBoardTile = boardTile
+	currentBoardTile.set_letter_tile(self)
+	currentBoardTile.set_occupancy("New")
+	if is_blank():
+		select_label()
+
+func is_blank():
+	if title.to_lower().contains("blank"):
+		return true
+	return false
+
+func select_label():
+	awaitingLetter = true
+	set_label("_")
+	print("awaiting letter")
+	#status_label.text = "Choose a letter for the blank tile"
 
 func set_value(value = null):
 	if value:
@@ -141,6 +171,9 @@ func get_label():
 func get_letter():
 	return label
 	#For special tiles like blanks this will be different
+
+func set_title(value):
+	title = value
 
 func pulse_and_rotate(duration):
 	var tween = get_tree().create_tween()

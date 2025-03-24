@@ -47,12 +47,18 @@ func add_standard_tiles():
 	add_tiles(" ", 2)
 
 func get_tile():
-	var rnd = RandomNumberGenerator.new()
-	randomize()
-	var index = rnd.randi_range(0, len(tiles) - 1)
-	var tileLabel = tiles[index]
-	tiles.remove_at(index)
-	
-	var tile = TILE.instantiate()
-	tile.set_values(tileLabel, TILESIZE, null, 1, PLAYER)
-	return tile
+	if len(tiles) > 0:
+		var rnd = RandomNumberGenerator.new()
+		randomize()
+		var index = rnd.randi_range(0, len(tiles) - 1)
+		var tileLabel = tiles[index]
+		tiles.remove_at(index)
+		
+		var title = tileLabel
+		if tileLabel == " ":
+			title = "blank"
+		var tile = TILE.instantiate()
+		tile.set_values(title, tileLabel, TILESIZE, null, 1, PLAYER)
+		return tile
+	else:
+		return null
