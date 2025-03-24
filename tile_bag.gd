@@ -1,14 +1,17 @@
 extends Node
 
 var TILESIZE = null
+var PLAYER = null
 var TILE = preload("res://letter_tile.tscn")
 var tiles = []
+
 
 func _init():
 	add_standard_tiles()
 
-func set_values(tileSize):
+func set_values(tileSize, player):
 	TILESIZE = tileSize
+	PLAYER = player
 
 func add_tiles(value, quantity):
 	for i in range(quantity):
@@ -51,5 +54,5 @@ func get_tile():
 	tiles.remove_at(index)
 	
 	var tile = TILE.instantiate()
-	tile.set_values(tileLabel, TILESIZE, null, 1)
+	tile.set_values(tileLabel, TILESIZE, null, 1, PLAYER)
 	return tile

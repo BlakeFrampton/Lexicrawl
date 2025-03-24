@@ -21,6 +21,7 @@ func set_values(tileSize: int, tileBorder: int, gridSize: int, passedPlayer: Obj
 func initialise():
 	initialise_board()
 	update_player_rack()
+	#initialise_enemy()
 	
 	game_turn()
 
@@ -32,6 +33,7 @@ func initialise_board():
 	board.get_node("Grid").playMade.connect(play_made)
 
 func update_player_rack(tilesUsed = []):
+	print("Tiles used: ", tilesUsed)
 	player.use_tiles(tilesUsed)
 	player.draw_tiles()
 	var playerRack = player.get_rack()
@@ -112,7 +114,7 @@ func _on_exchange_button_pressed():
 		player.exchange_start()
 	else:
 		exchanging = false
-		player.exchange_tiles()
+		await player.exchange_tiles()
 		update_player_rack()
 
 func wait(seconds):

@@ -7,6 +7,7 @@ var TILEBAG = preload("res://tile_bag.tscn")
 var rack = []
 var rackSize = 7
 var tileBag
+var dragging = false
 	
 func set_values(tileSize: int, tileBorder: int):
 	TILESIZE = tileSize
@@ -14,7 +15,7 @@ func set_values(tileSize: int, tileBorder: int):
 
 func _ready():
 	tileBag = TILEBAG.instantiate()
-	tileBag.set_values(TILESIZE)
+	tileBag.set_values(TILESIZE, self)
 	add_child(tileBag)
 
 func get_racksize():
@@ -37,9 +38,19 @@ func exchange_start():
 		tile.set_exchanging(true)
 		
 func exchange_tiles():
+	var tilesToExchange = []
 	for tile in rack:
+		print("Tile: ", tile.get_label(), " Exchange: ", tile.get_exchange_this_tile())
 		if tile.get_exchange_this_tile():
-			rack.erase(tile)
-			tile.queue_free()
+			tilesToExchange.append(tile)
 		else:
 			tile.set_exchanging(false)
+	for tile in tilesToExchange:
+		rack.erase(tile)
+		tile.queue_free()
+		
+func set_dragging(value):
+	dragging = value
+
+func get_dragging():
+	return dragging

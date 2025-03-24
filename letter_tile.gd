@@ -4,19 +4,21 @@ var TILESIZE = null
 
 var exchanging = false
 var exchangeThisTile = false
-var dragging = false
 var dragTileStartPosition
 var dragMouseStartPosition
 var currentBoardTile
 var label
 var value = 0
 var multiplier = 1
+var player
+var dragging = false
 
-func set_values(label, tileSize, value, multiplier):
+func set_values(label, tileSize, value, multiplier, player=null):
 	TILESIZE = tileSize
 	set_label(label)
 	set_value(value)
 	set_multiplier(multiplier)
+	self.player = player
 
 func _process(delta):
 	if dragging:
@@ -30,12 +32,14 @@ func _input(event):
 				if exchanging:
 					exchangeThisTile = !exchangeThisTile
 					set_exchange_colour()
-				elif not dragging:
+				elif player.get_dragging() == false:
 					dragging = true
+					player.set_dragging(true) #Stores whether any tile is being dragged, to avoid multiple tiles being held at once
 					dragTileStartPosition = position
 					dragMouseStartPosition = get_global_mouse_position()
 					move_to_front() #Move to front of canvas
-		elif dragging:
+		elif player.get_dragging():
+			player.set_dragging(false)
 			dragging = false
 
 func set_exchanging(exchanging):
