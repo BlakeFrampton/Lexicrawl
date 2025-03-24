@@ -3,11 +3,6 @@ extends Node
 var TILESIZE = null
 var TILEBORDER = null
 var GRIDSIZE = null
-const STANDARDBOARDCOLOUR = Color(0xFFe2AEFF)
-const TRIPLEWORDCOLOUR = Color(0xd95258FF)
-const DOUBLEWORDCOLOUR = Color(0xe79ea9FF)
-const DOUBLELETTERCOLOUR = Color(0xa2cceeFF)
-const TRIPLELETTERCOLOUR = Color(0x0185c6FF)
 
 var boardTiles = []
 var wordList = []
@@ -28,12 +23,30 @@ func initialise():
 		for y in range(GRIDSIZE):
 			boardTiles[x].append(0) # Set a starter value for each position
 			boardTiles[x][y] = board_tile.instantiate()
-			boardTiles[x][y].get_node("ColorRect").position=Vector2(startingX + x * (TILESIZE + TILEBORDER), startingY + y * (TILESIZE + TILEBORDER))
-			boardTiles[x][y].get_node("ColorRect").size = Vector2(TILESIZE, TILESIZE)
-			boardTiles[x][y].get_node("ColorRect").color = setBoardTileColour(boardTiles, x, y)
-			#boardTiles[x][y].check_play.connect(get_words_to_score)
+			boardTiles[x][y].position=Vector2(startingX + x * (TILESIZE + TILEBORDER), startingY + y * (TILESIZE + TILEBORDER))
+			boardTiles[x][y].get_multiplier_label().size = Vector2(TILESIZE, TILESIZE)
+			boardTiles[x][y].get_color_rect().size = Vector2(TILESIZE, TILESIZE)
+			boardTiles[x][y].set_square_multiplier(1, "word")
 
 			add_child(boardTiles[x][y])
+	set_board_multipliers()
+
+func set_board_multipliers():
+	var word2 = [[1,1], [2,2], [3,3], [4,4], [7,7], [10,10], [11,11], [12,12], [13,13], [1,13],[2,12],[3,11], [4,10], [10,4], [11,3],[12,2],[13,1]]
+	var word3 = [[0,0], [7,0], [14,0], [0,7], [14,7], [0,14], [7,14], [14,14]]
+	var letter2 = [[3,0], [11,0],[6,2], [8,2],[0,3],[7,3], [14,3], [2,6], [6,6], [8,6], [12,6], [3,7],[11,7], [2,8], [6,8], [8,8], [12,8],[0,11], [7,11], [14,11], [6,12],[8,12],[3,14],[11,14]]
+	var letter3 = [[5,1], [9,1], [1,5], [5,5], [9,5], [13,5], [1,9], [5,9], [9,9], [13,9], [5,13], [9,13]]
+	
+	for square in word2:
+		boardTiles[square[0]][square[1]].set_square_multiplier(2, "word")
+	for square in word3:
+		boardTiles[square[0]][square[1]].set_square_multiplier(3, "word")
+	for square in letter2:
+		boardTiles[square[0]][square[1]].set_square_multiplier(2, "letter")
+	for square in letter3:
+		boardTiles[square[0]][square[1]].set_square_multiplier(3, "letter")
+
+
 
 func set_word_list(filePath):
 	var file = FileAccess.open(filePath, FileAccess.READ)
@@ -45,29 +58,6 @@ func set_word_list(filePath):
 			words.append(line)
 	
 	wordList = words
-
-func setBoardTileColour(boardTiles, x, y):
-	if (min(x, y) == 0 and max(x,y) == 3) or (min(x, y) == 0 and max(x,y) == 11) or (min(x, y) == 3 and max(x,y) == 14) or (min(x, y) == 11 and max(x,y) == 14): #outer ring
-		boardTiles[x][y].tileType = "2L"
-		return DOUBLELETTERCOLOUR
-	if (x + y == 12 or x + y == 14 or x + y == 16) and (x == 6 or x == 8) and (y == 6 or y == 8): #inner ring
-		return DOUBLELETTERCOLOUR
-		boardTiles[x][y].tileType = "2L"
-	if (x == 2 and (y == 6 or y == 8) or x == 3 and y == 7 or x == 6 and (y == 2 or y == 12) or x == 7 and (y == 3 or y == 11) or x == 8 and (y == 2 or y == 12) or x == 11 and y == 7 or x == 12 and (y == 6 or y==8)):
-		return DOUBLELETTERCOLOUR
-		boardTiles[x][y].tileType = "2L"
-	if (x == 1 or x == 5 or x == 9 or x == 13) and (y == 1 or y == 5 or y == 9 or y == 13):
-		if !((x + y == 14 or x + y == 2 or x + y == 26) and (x == 1 or x == 14)):
-			return TRIPLELETTERCOLOUR
-			boardTiles[x][y].tileType = "3L"
-	if y == 0 or y == 7 or y == 14:
-		if x == 0 or (x == 7 and y != 7) or x == 14:
-			return TRIPLEWORDCOLOUR
-			boardTiles[x][y].tileType = "3W"
-	if x == y or (14-x) == y:
-		return DOUBLEWORDCOLOUR
-		boardTiles[x][y].tileType = "2W"
-	return STANDARDBOARDCOLOUR
 
 func is_horizontal_play():
 	var row = -1
@@ -131,19 +121,23 @@ func get_words_to_score():
 		if !attaches_to_previously_played_word(newTiles):
 			return []
 	
-	var playedWords = []
+	var wordsToScore = []
 	if horizontal:
-		playedWords = find_played_words(1,0, newTiles)
+		wordsToScore = find_played_words(1,0, newTiles)
 	else:
-		playedWords = find_played_words(0,1, newTiles)
-	
-	var wordsToScore = playedWords
+		wordsToScore = find_played_words(0,1, newTiles)
 	
 	for word in wordsToScore:
-		if not word in wordList:
+		if not tiles_to_word(word) in wordList:
 			return []
 	
 	return wordsToScore
+
+func tiles_to_word(tiles):
+	var word = ""
+	for tile in tiles:
+		word += tile.get_label()
+	return word
 
 func is_first_turn():
 	for x in range(GRIDSIZE):
@@ -170,7 +164,8 @@ func find_played_words(deltaX, deltaY, newTiles):
 		coords[1] -= deltaY
 	
 	var startCoords = coords.duplicate()
-	var word = boardTiles[coords[0]][coords[1]].get_letterTile().get_letter() #Get first letter of word
+	var word = []
+	word.append(boardTiles[coords[0]][coords[1]].get_letter_tile()) #Get first letter of word
 	
 	if boardTiles[coords[0]][coords[1]].get_occupancy() == "New":
 		newTilesEncountered += 1
@@ -179,7 +174,7 @@ func find_played_words(deltaX, deltaY, newTiles):
 	while coords[0] + deltaX < GRIDSIZE and coords[1] + deltaY < GRIDSIZE and boardTiles[coords[0] + deltaX][coords[1] + deltaY].get_occupancy() != "Empty":
 		coords[0] += deltaX
 		coords[1] += deltaY
-		word += boardTiles[coords[0]][coords[1]].get_letterTile().get_letter() #Add next letter to word
+		word.append(boardTiles[coords[0]][coords[1]].get_letter_tile()) #Add next letter to word
 		if boardTiles[coords[0]][coords[1]].get_occupancy() == "New":
 			newTilesEncountered += 1
 	
@@ -197,22 +192,21 @@ func find_played_words(deltaX, deltaY, newTiles):
 		
 		#Only check for perpendicular words on new tiles
 		if boardTiles[coords[0]][coords[1]].get_occupancy() == "New": 
-			word = ""
+			word = []
 			#Traverse to start of word
 			while coords[0] - deltaY >= 0 and coords[1] - deltaX >= 0 and boardTiles[coords[0] - deltaY][coords[1] - deltaX].get_occupancy() != "Empty": #Delta x and y are switched to check for perpendicular attached words
 				coords[0] -= deltaY
 				coords[1] -= deltaX
-			word += boardTiles[coords[0]][coords[1]].get_letterTile().get_letter()
+			word.append(boardTiles[coords[0]][coords[1]].get_letter_tile())
 			
 			#Traverse to end of word
 			while coords[0] + deltaY < GRIDSIZE and coords[1] + deltaX < GRIDSIZE and boardTiles[coords[0] + deltaY][coords[1] + deltaX].get_occupancy() != "Empty":
 				coords[0] += deltaY
 				coords[1] += deltaX
-				word += boardTiles[coords[0]][coords[1]].get_letterTile().get_letter()
+				word.append(boardTiles[coords[0]][coords[1]].get_letter_tile())
 			
 			if len(word) >= 2:
 				words.append(word)
-	
 	return words
 
 func submit_play():
@@ -222,7 +216,7 @@ func submit_play():
 		for x in range(GRIDSIZE):
 			for y in range(GRIDSIZE):
 				if boardTiles[x][y].get_occupancy() == "New":
-					var tile = boardTiles[x][y].get_letterTile()
+					var tile = boardTiles[x][y].get_letter_tile()
 					if !tilesUsed.has(tile): #if we haven't recorded that this tile is used, add it to the list
 						tilesUsed.append(tile)
 					boardTiles[x][y].set_occupancy("Occupied")

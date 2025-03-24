@@ -51,5 +51,5 @@ func get_tile():
 	tiles.remove_at(index)
 	
 	var tile = TILE.instantiate()
-	tile.set_values(tileLabel, TILESIZE)
+	tile.set_values(tileLabel, TILESIZE, null, 1)
 	return tile

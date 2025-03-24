@@ -8,12 +8,15 @@ var dragging = false
 var dragTileStartPosition
 var dragMouseStartPosition
 var currentBoardTile
-var label;
+var label
+var value = 0
+var multiplier = 1
 
-func set_values(tileLabel, tileSize):
-	label = tileLabel
+func set_values(label, tileSize, value, multiplier):
 	TILESIZE = tileSize
-	%Letter.text = label;
+	set_label(label)
+	set_value(value)
+	set_multiplier(multiplier)
 
 func _process(delta):
 	if dragging:
@@ -63,47 +66,70 @@ func move_tile():
 	var stillOnTile = false
 	position = dragTileStartPosition + (get_global_mouse_position() - dragMouseStartPosition)
 	for boardTile in grid.get_children():
-		var boardTileRect = boardTile.get_child(0)
 		if boardTile.get_occupancy() == "Empty":
-			if (boardTileRect.position.x<= mousePos.x && boardTileRect.position.x + TILESIZE >= mousePos.x && boardTileRect.position.y<= mousePos.y && boardTileRect.position.y+ TILESIZE  >= mousePos.y):
+			if (boardTile.position.x<= mousePos.x && boardTile.position.x + TILESIZE >= mousePos.x && boardTile.position.y<= mousePos.y && boardTile.position.y+ TILESIZE  >= mousePos.y):
 				if not currentBoardTile == null:
-					currentBoardTile.set_letterTile(null)
+					currentBoardTile.set_letter_tile(null)
 					currentBoardTile.set_occupancy("Empty")
 				currentBoardTile = boardTile
-				currentBoardTile.set_letterTile(self)
+				currentBoardTile.set_letter_tile(self)
 				currentBoardTile.set_occupancy("New")
 				stillOnTile = true
 		else:
 			if boardTile == currentBoardTile:
-							if (boardTileRect.position.x<= mousePos.x && boardTileRect.position.x + TILESIZE >= mousePos.x && boardTileRect.position.y<= mousePos.y && boardTileRect.position.y+ TILESIZE  >= mousePos.y):
+							if (boardTile.position.x<= mousePos.x && boardTile.position.x + TILESIZE >= mousePos.x && boardTile.position.y<= mousePos.y && boardTile.position.y+ TILESIZE  >= mousePos.y):
 								stillOnTile = true
 	if stillOnTile and not currentBoardTile == null:
-		position = Vector2(currentBoardTile.get_child(0).position.x + TILESIZE /2, currentBoardTile.get_child(0).position.y + TILESIZE /2)
+		position = Vector2(currentBoardTile.position.x + TILESIZE /2, currentBoardTile.position.y + TILESIZE /2)
 	if (not currentBoardTile == null) and !stillOnTile:
-		currentBoardTile.set_letterTile(null)
+		currentBoardTile.set_letter_tile(null)
 		currentBoardTile.set_occupancy("Empty")
 		currentBoardTile = null
 
-func get_value():
-	var pointValue;
-	if label == " ":
-		pointValue = 0
-	if label == "D" or label == "G":
-		pointValue = 2
-	elif label == "B" or label == "C" or label == "M" or label == "P":
-		pointValue = 3
-	elif label == "F" or label == "H" or label == "V" or label == "W" or label == "Y":
-		pointValue = 4
-	elif label == "K":
-		pointValue = 5
-	elif label == "J" or label == "X":
-		pointValue = 8
-	elif label == "Q" or label == "Z":
-		pointValue = 10
+func set_value(value = null):
+	if value:
+		self.value = value
 	else:
-		pointValue = -1;
+		if label == " ":
+			self.value = 0
+		elif label == "A" or label == "E" or label == "I" or label == "L" or label == "N" or label == "O" or label == "R" or label == "S" or label == "T" or label == "U":
+			self.value = 1
+		elif label == "D" or label == "G":
+			self.value = 2
+		elif label == "B" or label == "C" or label == "M" or label == "P":
+			self.value = 3
+		elif label == "F" or label == "H" or label == "V" or label == "W" or label == "Y":
+			self.value = 4
+		elif label == "K":
+			self.value = 5
+		elif label == "J" or label == "X":
+			self.value = 8
+		elif label == "Q" or label == "Z":
+			self.value = 10
+		else:
+			self.value = -1;
 	
-	return pointValue;
+	%Value.text = str(self.value)
+
+func get_value():
+	return value
+
+func set_multiplier(multiplier):
+	if multiplier:
+		self.multiplier = multiplier
+	else:
+		self.multiplier = 1
+	if self.multiplier == 1:
+		%Multiplier.text = ""
+	else:
+		%Multiplier.text = "x" + str(self.multiplier)
+
+func get_multiplier():
+	return multiplier
+
+func set_label(label):
+	self.label = label
+	%Letter.text = self.label;
 
 func get_label():
 	return label
@@ -111,3 +137,19 @@ func get_label():
 func get_letter():
 	return label
 	#For special tiles like blanks this will be different
+
+func pulse_and_rotate(duration):
+	var tween = get_tree().create_tween()
+	var sprite = get_node("Sprite2D")
+	const SCALE = 1.5
+	# Scale up to 130% and rotate 30 degrees in 0.25s
+	tween.parallel().tween_property(sprite, "scale", Vector2(SCALE, SCALE), duration / 2).set_trans(Tween.TRANS_SINE)
+	tween.parallel().tween_property(sprite, "rotation_degrees", 30, duration / 2).set_trans(Tween.TRANS_SINE)
+	
+	#tween.chain()
+	## Scale back to 100% and rotate back to 0 in the next 0.25s
+	tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), duration / 2).set_delay(duration/2).set_trans(Tween.TRANS_SINE)
+	tween.parallel().tween_property(sprite, "rotation_degrees", 0, duration / 2).set_delay(duration/2).set_trans(Tween.TRANS_SINE)
+
+func get_current_board_tile():
+	return currentBoardTile

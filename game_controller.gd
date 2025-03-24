@@ -13,7 +13,7 @@ var exchanging = false
 
 func get_draggingSomething():
 	return draggingSomething
-	
+
 func set_draggingSomething(x):
 	draggingSomething = x
 
