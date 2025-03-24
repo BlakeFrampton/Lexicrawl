@@ -47,7 +47,6 @@ func set_exchange_colour():
 		get_node("Sprite2D").modulate = Color(1,1,1)
 
 func get_exchange_this_tile():
-	print(exchangeThisTile)
 	return exchangeThisTile
 
 func hoveringMe():

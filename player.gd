@@ -37,9 +37,7 @@ func exchange_start():
 		tile.set_exchanging(true)
 		
 func exchange_tiles():
-	print(rack)
 	for tile in rack:
-		print(tile.get_label())
 		if tile.get_exchange_this_tile():
 			rack.erase(tile)
 			tile.queue_free()

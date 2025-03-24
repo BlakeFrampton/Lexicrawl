@@ -50,3 +50,4 @@ func show_player_rack(playerRack):
 		if tile.get_parent() != self:
 			add_child(tile)
 		tile.position = Vector2(startingX + i * (TILESIZE + TILEBORDER), startingY)
+

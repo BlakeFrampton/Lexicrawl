@@ -29,13 +29,14 @@ func initialise_board():
 	board.set_values(TILESIZE, TILEBORDER, GRIDSIZE, player.get_racksize())
 	board.initialise()
 	add_child(board)
-	get_node("Board").get_node("Grid").playMade.connect(play_made)
+	board.get_node("Grid").playMade.connect(play_made)
 
 func update_player_rack(tilesUsed = []):
 	player.use_tiles(tilesUsed)
 	player.draw_tiles()
 	var playerRack = player.get_rack()
 	board.show_player_rack(playerRack)
+	board.get_node("Grid").unoccupy_board_tiles()
 
 func game_turn():
 	if !playersTurn:
@@ -57,12 +58,8 @@ func resolve_scores():
 	#Cancel out damage then deal 
 	return
 
-
-
-
 func _on_submit_button_pressed():
 	board.get_node("Grid").submit_play()
-
 
 func _on_exchange_button_pressed():
 	if !exchanging:
