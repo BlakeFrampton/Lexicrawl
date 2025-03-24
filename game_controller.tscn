@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://tfo257lp8324"]
 
-[ext_resource type="Script" path="res://Globals.gd" id="1_mh1hv"]
+[sub_resource type="GDScript" id="GDScript_vi4q0"]
 
 [node name="game_controller" type="Node2D"]
-script = ExtResource("1_mh1hv")
+script = SubResource("GDScript_vi4q0")

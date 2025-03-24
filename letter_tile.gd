@@ -1,10 +1,17 @@
 extends Node2D
+
+var TILESIZE = null
+
 var dragging = false
 var dragTileStartPosition
 var dragMouseStartPosition
 var currentBoardTile
-var letter;
+var label;
 
+func set_values(tileLabel, tileSize):
+	label = tileLabel
+	TILESIZE = tileSize
+	%Letter.text = label;
 
 func _process(delta):
 	if dragging:
@@ -14,15 +21,13 @@ func _process(delta):
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #Detects button pressed or lifted
 		if Input.is_action_pressed("left_click"): #Button pressed
-			if hoveringMe() and not Globals.get_draggingSomething():
-				Globals.set_draggingSomething(true)
+			if hoveringMe() and not dragging:
 				dragging = true
 				dragTileStartPosition = position
 				dragMouseStartPosition = get_global_mouse_position()
 				move_to_front() #Move to front of canvas
 		elif dragging:
 			dragging = false
-			Globals.set_draggingSomething(false)
 
 func hoveringMe():
 	var mousePos = get_global_mouse_position()
@@ -33,9 +38,8 @@ func hoveringMe():
 	return false
 
 func move_tile():
-	var TILESIZE = Globals.get_tileSize()
 	var mousePos = get_global_mouse_position()
-	var grid = get_node("/root/Game/game_controller/Board/Grid")
+	var grid = get_node("/root/Game/Battle/Board/Grid")
 	var stillOnTile = false
 	position = dragTileStartPosition + (get_global_mouse_position() - dragMouseStartPosition)
 	for boardTile in grid.get_children():
@@ -49,7 +53,6 @@ func move_tile():
 				currentBoardTile.set_letterTile(self)
 				currentBoardTile.set_occupancy("New")
 				stillOnTile = true
-				currentBoardTile.check_play.emit()
 		else:
 			if boardTile == currentBoardTile:
 							if (boardTileRect.position.x<= mousePos.x && boardTileRect.position.x + TILESIZE >= mousePos.x && boardTileRect.position.y<= mousePos.y && boardTileRect.position.y+ TILESIZE  >= mousePos.y):
@@ -59,36 +62,32 @@ func move_tile():
 	if (not currentBoardTile == null) and !stillOnTile:
 		currentBoardTile.set_letterTile(null)
 		currentBoardTile.set_occupancy("Empty")
-		currentBoardTile.check_play.emit()
 		currentBoardTile = null
 
 func get_value():
 	var pointValue;
-	if letter == " ":
+	if label == " ":
 		pointValue = 0
-	if letter == "D" or letter == "G":
+	if label == "D" or label == "G":
 		pointValue = 2
-	elif letter == "B" or letter == "C" or letter == "M" or letter == "P":
+	elif label == "B" or label == "C" or label == "M" or label == "P":
 		pointValue = 3
-	elif letter == "F" or letter == "H" or letter == "V" or letter == "W" or letter == "Y":
+	elif label == "F" or label == "H" or label == "V" or label == "W" or label == "Y":
 		pointValue = 4
-	elif letter == "K":
+	elif label == "K":
 		pointValue = 5
-	elif letter == "J" or letter == "X":
+	elif label == "J" or label == "X":
 		pointValue = 8
-	elif letter == "Q" or letter == "Z":
+	elif label == "Q" or label == "Z":
 		pointValue = 10
 	else:
 		pointValue = -1;
 	
 	return pointValue;
 
-func set_letter(tileLetter):
-	letter = tileLetter;
-	if letter == "blank":
-		%Letter.text = " "
-	else:
-		%Letter.text = letter;
+func get_label():
+	return label
 
 func get_letter():
-	return %Letter.text
+	return label
+	#For special tiles like blanks this will be different

@@ -1,13 +1,18 @@
 extends Node
 
-var Tiles = []
+var TILESIZE = null
+var TILE = preload("res://letter_tile.tscn")
+var tiles = []
 
 func _init():
 	add_standard_tiles()
 
+func set_values(tileSize):
+	TILESIZE = tileSize
+
 func add_tiles(value, quantity):
 	for i in range(quantity):
-		Tiles.append(value)
+		tiles.append(value)
 	
 func add_standard_tiles():
 	add_tiles("A", 9)
@@ -41,10 +46,10 @@ func add_standard_tiles():
 func get_tile():
 	var rnd = RandomNumberGenerator.new()
 	randomize()
-	var index = rnd.randi_range(0, len(Tiles) - 1)
-	var tileValue = Tiles[index]
-	Tiles.remove_at(index)
+	var index = rnd.randi_range(0, len(tiles) - 1)
+	var tileLabel = tiles[index]
+	tiles.remove_at(index)
 	
-	var letter_tile = load("res://letter_tile.tscn").instantiate()
-	letter_tile.set_letter(tileValue)
-	return letter_tile
+	var tile = TILE.instantiate()
+	tile.set_values(tileLabel, TILESIZE)
+	return tile

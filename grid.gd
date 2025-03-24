@@ -1,18 +1,25 @@
 extends Node
 
-var boardTiles = []
-var TILESIZE = Globals.get_tileSize()
-var TILEBORDER = Globals.get_tileBorder()
-const GRIDSIZE = 15
+var TILESIZE = null
+var TILEBORDER = null
+var GRIDSIZE = null
 const STANDARDBOARDCOLOUR = Color(0xFFe2AEFF)
 const TRIPLEWORDCOLOUR = Color(0xd95258FF)
 const DOUBLEWORDCOLOUR = Color(0xe79ea9FF)
 const DOUBLELETTERCOLOUR = Color(0xa2cceeFF)
 const TRIPLELETTERCOLOUR = Color(0x0185c6FF)
+
+var boardTiles = []
 var wordList = []
 
+signal playMade
 
-func _ready():
+func set_values(tileSize, tileBorder, gridSize):
+	TILESIZE = tileSize
+	TILEBORDER = tileBorder
+	GRIDSIZE = gridSize
+
+func initialise():
 	var board_tile = preload("res://board_tile.tscn")
 	var startingX = (DisplayServer.screen_get_size().x - GRIDSIZE * (TILESIZE + TILEBORDER)) / 2 
 	var startingY = (DisplayServer.screen_get_size().y - (GRIDSIZE + 4) * (TILESIZE + TILEBORDER)) / 2 
@@ -24,7 +31,7 @@ func _ready():
 			boardTiles[x][y].get_node("ColorRect").position=Vector2(startingX + x * (TILESIZE + TILEBORDER), startingY + y * (TILESIZE + TILEBORDER))
 			boardTiles[x][y].get_node("ColorRect").size = Vector2(TILESIZE, TILESIZE)
 			boardTiles[x][y].get_node("ColorRect").color = setBoardTileColour(boardTiles, x, y)
-			boardTiles[x][y].check_play.connect(get_words_to_score)
+			#boardTiles[x][y].check_play.connect(get_words_to_score)
 
 			add_child(boardTiles[x][y])
 
@@ -187,12 +194,13 @@ func find_played_words(deltaX, deltaY, newTiles):
 			words.append(word)
 	
 	return words
-	
+
 func submit_play():
 	var wordsToScore = get_words_to_score()
-	print(wordsToScore)
 	if wordsToScore != []:
 		for x in range(GRIDSIZE):
 			for y in range(GRIDSIZE):
 				if boardTiles[x][y].get_occupancy() == "New":
 					boardTiles[x][y].set_occupancy("Occupied")
+	
+	playMade.emit(wordsToScore)

@@ -9,5 +9,3 @@ script = ExtResource("1_bqo4b")
 
 [node name="Grid" type="Node" parent="."]
 script = ExtResource("2_4if4x")
-
-[node name="Rack" type="Node" parent="."]

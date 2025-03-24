@@ -3,7 +3,6 @@ extends Node2D
 var tileType = "Standard"
 var occupancy = "Empty"
 var letterTile
-signal check_play
 
 func set_occupancy(value):
 	occupancy = value

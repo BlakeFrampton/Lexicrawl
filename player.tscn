@@ -4,5 +4,3 @@
 
 [node name="Player" type="Node"]
 script = ExtResource("1_vs34n")
-
-[node name="Rack" type="Node" parent="."]
