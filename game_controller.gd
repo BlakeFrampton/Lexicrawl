@@ -25,6 +25,7 @@ func _ready():
 func spawn_player():
 	player = playerPath.instantiate()
 	player.set_values(TILESIZE, TILEBORDER)
+	player.initialise()
 	add_child(player)
 
 func spawn_battle():

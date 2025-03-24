@@ -1,13 +1,15 @@
 extends Node2D
 
-var boardPath = preload("res://board.tscn")
+var BOARD = preload("res://board.tscn")
+var ENEMY = preload("res://enemy.tscn")
 
 var TILESIZE = null
 var TILEBORDER = null
 var GRIDSIZE = null
 
-var board = null
-var player = null
+var board
+var player
+var enemy
 var playersTurn = true
 var exchanging = false
 
@@ -21,44 +23,61 @@ func set_values(tileSize: int, tileBorder: int, gridSize: int, passedPlayer: Obj
 func initialise():
 	initialise_board()
 	update_player_rack()
-	#initialise_enemy()
+	initialise_enemy()
 	
-	game_turn()
 
 func initialise_board():
-	board = boardPath.instantiate()
+	board = BOARD.instantiate()
 	board.set_values(TILESIZE, TILEBORDER, GRIDSIZE, player.get_racksize())
 	board.initialise()
 	add_child(board)
 	board.get_node("Grid").playMade.connect(play_made)
 
 func update_player_rack(tilesUsed = []):
-	print("Tiles used: ", tilesUsed)
 	player.use_tiles(tilesUsed)
 	player.draw_tiles()
 	var playerRack = player.get_rack()
 	board.show_player_rack(playerRack)
 	board.get_node("Grid").unoccupy_board_tiles()
 
+func update_enemy_rack(tilesUsed = []):
+	enemy.use_tiles(tilesUsed)
+	enemy.draw_tiles(board)
+	board.get_node("Grid").unoccupy_board_tiles()
+
+func initialise_enemy():
+	enemy = ENEMY.instantiate()
+	enemy.set_values(TILESIZE, TILEBORDER, GRIDSIZE, 30, 5)
+	enemy.initialise(board)
+	add_child(enemy)
+
 func game_turn():
 	if !playersTurn:
-		#Run enemy turn
-		playersTurn = true
-		return
-	return
+		print("enemy turn")
+		var enemyMove = enemy.get_move(board.get_node("Grid"))
+		print("enemy move: ", enemyMove)
+		if enemyMove == []:
+			play_made([], [])
+	else:
+		print("player turn")
 
 
 func play_made(wordsToScore, tilesUsed):
+	print("play:")
 	for word in wordsToScore:
 		print(tiles_to_word(word))
 	
-	print(await calculate_score(wordsToScore))
+	await calculate_score(wordsToScore)
 	remove_board_multipliers(wordsToScore)
 	
-	if (playersTurn):
+	playersTurn = !playersTurn
+	if playersTurn:
+		update_enemy_rack(tilesUsed)
+	if !playersTurn:
 		update_player_rack(tilesUsed)
 		resolve_scores()
-	playersTurn = false
+		await wait(1)
+		
 	game_turn()
 
 func tiles_to_word(tiles):
@@ -115,6 +134,7 @@ func _on_exchange_button_pressed():
 	else:
 		exchanging = false
 		await player.exchange_tiles()
+		play_made([], [])
 		update_player_rack()
 
 func wait(seconds):

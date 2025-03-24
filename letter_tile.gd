@@ -25,26 +25,30 @@ func set_values(title, label, tileSize, value, multiplier, player=null):
 	self.player = player
 
 func _process(delta):
-	if dragging:
+	if dragging and player != null:
 		if currentBoardTile == null or currentBoardTile.get_occupancy() != "Occupied":
 			move_tile()
 
 func _input(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #Detects button pressed or lifted
-		if Input.is_action_pressed("left_click"): #Button pressed
-			if hoveringMe():
-				if exchanging:
-					exchangeThisTile = !exchangeThisTile
-					set_exchange_colour()
-				elif player.get_dragging() == false:
-					dragging = true
-					player.set_dragging(true) #Stores whether any tile is being dragged, to avoid multiple tiles being held at once
-					dragTileStartPosition = position
-					dragMouseStartPosition = get_global_mouse_position()
-					move_to_front() #Move to front of canvas
-		elif player.get_dragging():
-			player.set_dragging(false)
-			dragging = false
+	if player:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #Detects button pressed or lifted
+			if Input.is_action_pressed("left_click"): #Button pressed
+				tile_movement()
+			elif player.get_dragging():
+				player.set_dragging(false)
+				dragging = false
+
+func tile_movement():
+	if hoveringMe():
+					if exchanging:
+						exchangeThisTile = !exchangeThisTile
+						set_exchange_colour()
+					elif player.get_dragging() == false:
+						dragging = true
+						player.set_dragging(true) #Stores whether any tile is being dragged, to avoid multiple tiles being held at once
+						dragTileStartPosition = position
+						dragMouseStartPosition = get_global_mouse_position()
+						move_to_front() #Move to front of canvas
 
 func _unhandled_input(event):
 	if awaitingLetter and event is InputEventKey and event.pressed:
@@ -96,11 +100,14 @@ func move_tile():
 							if (boardTile.position.x<= mousePos.x && boardTile.position.x + TILESIZE >= mousePos.x && boardTile.position.y<= mousePos.y && boardTile.position.y+ TILESIZE  >= mousePos.y):
 								stillOnTile = true
 	if stillOnTile and not currentBoardTile == null:
-		position = Vector2(currentBoardTile.position.x + TILESIZE /2, currentBoardTile.position.y + TILESIZE /2)
+		position = get_board_tile_position(currentBoardTile)
 	if (not currentBoardTile == null) and !stillOnTile:
 		currentBoardTile.set_letter_tile(null)
 		currentBoardTile.set_occupancy("Empty")
 		currentBoardTile = null
+
+func get_board_tile_position(boardTile):
+	return Vector2(boardTile.position.x + TILESIZE /2, boardTile.position.y + TILESIZE /2)
 
 func placed_on_board(boardTile):
 	currentBoardTile = boardTile
@@ -117,7 +124,6 @@ func is_blank():
 func select_label():
 	awaitingLetter = true
 	set_label("_")
-	print("awaiting letter")
 	#status_label.text = "Choose a letter for the blank tile"
 
 func set_value(value = null):
@@ -175,7 +181,11 @@ func get_letter():
 func set_title(value):
 	title = value
 
+func get_title():
+	return title
+
 func pulse_and_rotate(duration):
+	move_to_front()
 	var tween = get_tree().create_tween()
 	var sprite = get_node("Sprite2D")
 	const SCALE = 1.5
@@ -190,3 +200,6 @@ func pulse_and_rotate(duration):
 
 func get_current_board_tile():
 	return currentBoardTile
+
+func set_current_board_tile(tile):
+	currentBoardTile = tile

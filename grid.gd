@@ -90,20 +90,28 @@ func get_new_tiles_placed():
 	return newTiles
 
 func attaches_to_previously_played_word(newTiles):
-	var adjacentToOccupied = false
 	for tile in newTiles:
 		var coords = get_coordinates(tile)
-		if not adjacentToOccupied:
-			if boardTiles[min(coords[0] + 1, GRIDSIZE -1)][coords[1]].get_occupancy() == "Occupied":
-				return true
-			elif boardTiles[max(coords[0] - 1, 0)][coords[1]].get_occupancy() == "Occupied":
-				return true
-			elif boardTiles[coords[0]][min(coords[1] + 1, GRIDSIZE -1)].get_occupancy() == "Occupied":
-				return true
-			elif boardTiles[coords[0]][max(coords[1] - 1, 0)].get_occupancy() == "Occupied":
+		var adjacentCoords = get_adjacent_coords(coords[0], coords[1])
+		for coordinate in adjacentCoords:
+			if boardTiles[coordinate[0]][coordinate[1]].get_occupancy() == "Occupied":
 				return true
 	return false
 
+func get_adjacent_coords(x,y):
+	var coords = []
+	if x - 1 >= 0:
+		coords.append([x-1, y])
+	if x + 1 < GRIDSIZE:
+		coords.append([x+1, y])
+	if y - 1 >= 0:
+		coords.append([x, y-1])
+	if y + 1 < GRIDSIZE:
+		coords.append([x, y+1])
+	return coords
+
+func get_board_tile(x,y):
+	return boardTiles[x][y]
 
 func get_words_to_score():
 	var horizontal = is_horizontal_play()

@@ -13,7 +13,7 @@ func set_values(tileSize: int, tileBorder: int):
 	TILESIZE = tileSize
 	TILEBORDER = tileBorder
 
-func _ready():
+func initialise():
 	tileBag = TILEBAG.instantiate()
 	tileBag.set_values(TILESIZE, self)
 	add_child(tileBag)
@@ -43,7 +43,6 @@ func exchange_start():
 func exchange_tiles():
 	var tilesToExchange = []
 	for tile in rack:
-		print("Tile: ", tile.get_label(), " Exchange: ", tile.get_exchange_this_tile())
 		if tile.get_exchange_this_tile():
 			tilesToExchange.append(tile)
 		else:
@@ -51,6 +50,7 @@ func exchange_tiles():
 	for tile in tilesToExchange:
 		rack.erase(tile)
 		tile.queue_free()
+	
 		
 func set_dragging(value):
 	dragging = value
