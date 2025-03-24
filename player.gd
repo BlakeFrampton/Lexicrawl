@@ -21,8 +21,27 @@ func get_racksize():
 	return rackSize
 
 func get_rack():
-	for i in range(7):
+	return rack
+
+func draw_tiles():
+	for i in range(rackSize - len(rack)):
 		var next_tile = tileBag.get_tile()
 		rack.append(next_tile)
-	
-	return rack
+
+func use_tiles(tilesUsed):
+	for tile in tilesUsed:
+		rack.erase(tile)
+
+func exchange_start():
+	for tile in rack:
+		tile.set_exchanging(true)
+		
+func exchange_tiles():
+	print(rack)
+	for tile in rack:
+		print(tile.get_label())
+		if tile.get_exchange_this_tile():
+			rack.erase(tile)
+			tile.queue_free()
+		else:
+			tile.set_exchanging(false)

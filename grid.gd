@@ -197,10 +197,15 @@ func find_played_words(deltaX, deltaY, newTiles):
 
 func submit_play():
 	var wordsToScore = get_words_to_score()
+	var tilesUsed = []
 	if wordsToScore != []:
 		for x in range(GRIDSIZE):
 			for y in range(GRIDSIZE):
 				if boardTiles[x][y].get_occupancy() == "New":
+					var tile = boardTiles[x][y].get_letterTile()
+					if !tilesUsed.has(tile): #if we haven't recorded that this tile is used, add it to the list
+						tilesUsed.append(tile)
 					boardTiles[x][y].set_occupancy("Occupied")
 	
-	playMade.emit(wordsToScore)
+	if wordsToScore != []:
+		playMade.emit(wordsToScore, tilesUsed)

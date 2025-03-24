@@ -2,6 +2,8 @@ extends Node2D
 
 var TILESIZE = null
 
+var exchanging = false
+var exchangeThisTile = false
 var dragging = false
 var dragTileStartPosition
 var dragMouseStartPosition
@@ -21,13 +23,32 @@ func _process(delta):
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #Detects button pressed or lifted
 		if Input.is_action_pressed("left_click"): #Button pressed
-			if hoveringMe() and not dragging:
-				dragging = true
-				dragTileStartPosition = position
-				dragMouseStartPosition = get_global_mouse_position()
-				move_to_front() #Move to front of canvas
+			if hoveringMe():
+				if exchanging:
+					exchangeThisTile = !exchangeThisTile
+					set_exchange_colour()
+				elif not dragging:
+					dragging = true
+					dragTileStartPosition = position
+					dragMouseStartPosition = get_global_mouse_position()
+					move_to_front() #Move to front of canvas
 		elif dragging:
 			dragging = false
+
+func set_exchanging(exchanging):
+	self.exchanging = exchanging
+	exchangeThisTile = false
+	set_exchange_colour()
+
+func set_exchange_colour():
+	if exchanging and !exchangeThisTile:
+		get_node("Sprite2D").modulate = Color(0.5,0.5,0.5, 1)
+	else:
+		get_node("Sprite2D").modulate = Color(1,1,1)
+
+func get_exchange_this_tile():
+	print(exchangeThisTile)
+	return exchangeThisTile
 
 func hoveringMe():
 	var mousePos = get_global_mouse_position()

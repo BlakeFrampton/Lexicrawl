@@ -9,6 +9,7 @@ const GRIDSIZE = 15
 var draggingSomething = false
 var player = null
 var battle = null
+var exchanging = false
 
 func get_draggingSomething():
 	return draggingSomething
@@ -20,10 +21,6 @@ func _ready():
 	spawn_player()
 	spawn_battle()
 	#spawn_map(), etc.
-
-
-func _on_button_pressed():
-	battle.get_node("Board").get_node("Grid").submit_play()
 
 func spawn_player():
 	player = playerPath.instantiate()
