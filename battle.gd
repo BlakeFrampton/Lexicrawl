@@ -47,7 +47,7 @@ func update_enemy_rack(tilesUsed = []):
 
 func initialise_enemy():
 	enemy = ENEMY.instantiate()
-	enemy.set_values(TILESIZE, TILEBORDER, GRIDSIZE, 30, 5)
+	enemy.set_values(TILESIZE, TILEBORDER, GRIDSIZE, 20, 5)
 	enemy.initialise(board)
 	add_child(enemy)
 

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://ckixnxuy4l8ha"]
+
+[ext_resource type="Script" path="res://game_controller.gd" id="3_aua3w"]
+
+[node name="Game" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("3_aua3w")

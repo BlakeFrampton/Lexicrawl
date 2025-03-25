@@ -114,32 +114,53 @@ func get_board_tile(x,y):
 	return boardTiles[x][y]
 
 func get_words_to_score():
+	var words = get_words_played()
+	
+	for word in words:
+		if not word_is_valid(tiles_to_word(word)):
+			return []
+
+	return words
+
+func word_is_horizontal(word_tiles):
+	var boardTile1 = word_tiles[0].get_current_board_tile()
+	var boardTile2 = word_tiles[1].get_current_board_tile()
+	
+	if get_coordinates(boardTile1)[0] > get_coordinates(boardTile2)[0]:
+		return true
+	return false
+
+func get_words_played():
 	var horizontal = is_horizontal_play()
 	var vertical = is_vertical_play()
 	
 	if not (horizontal or vertical):
+		print("not horizontal or vertical")
 		return []
 	
 	var newTiles = get_new_tiles_placed()
 	
 	if is_first_turn():
 		if boardTiles[7][7].get_occupancy() != "New": #First turn must be placed on center tile
+			print("7,7 is not occupied 'New'")
 			return []
 	else:
 		if !attaches_to_previously_played_word(newTiles):
+			print("Does not attach")
 			return []
 	
-	var wordsToScore = []
+	var words = []
 	if horizontal:
-		wordsToScore = find_played_words(1,0, newTiles)
+		words = get_directional_words_played(1,0, newTiles)
 	else:
-		wordsToScore = find_played_words(0,1, newTiles)
+		words = get_directional_words_played(0,1, newTiles)
 	
-	for word in wordsToScore:
-		if not tiles_to_word(word) in wordList:
-			return []
-	
-	return wordsToScore
+	return words
+
+func word_is_valid(word):
+	if word in wordList:
+		return true
+	return false
 
 func tiles_to_word(tiles):
 	var word = ""
@@ -161,7 +182,7 @@ func get_coordinates(boardTile):
 				return ([x,y])
 	return ([-1,-1])
 
-func find_played_words(deltaX, deltaY, newTiles):
+func get_directional_words_played(deltaX, deltaY, newTiles):
 	var coords = get_coordinates(newTiles[0])
 	var words = []
 	var newTilesEncountered = 0
