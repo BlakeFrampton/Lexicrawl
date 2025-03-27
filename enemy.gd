@@ -49,17 +49,11 @@ func print_rack():
 
 func get_move(grid):
 	print_rack()
+	var validLocations = get_valid_locations(grid)
+	playFinder.get_best_move(validLocations, grid, rack)
 	
-	var move = find_move(grid)
-	for placement in move:
-		var tile = placement[0]
-		var x = placement[1]
-		var y = placement[2]
-		place_tile(tile, x,y, grid)
-		tile.position = tile.get_board_tile_position(grid.get_board_tile(x,y))
+	print("Submitting play")
 	grid.submit_play()
-	
-	return move
 
 func find_move(grid):
 	#var search_results = search_step(grid, [], 0, rack, -1, -1, 1)
@@ -211,12 +205,6 @@ func reset_tiles(grid, placedTiles):
 	for placement in placedTiles:
 		placement[0].get_current_board_tile().set_occupancy("Empty")
 		placement[0].set_current_board_tile(null)
-
-func place_tile(tile, x, y, grid):
-	var boardTile = grid.get_board_tile(x,y)
-	boardTile.set_occupancy("New")
-	boardTile.set_letter_tile(tile)
-	tile.set_current_board_tile(boardTile)
 	
 func get_rack():
 	return rack

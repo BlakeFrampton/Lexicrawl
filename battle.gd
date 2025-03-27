@@ -60,14 +60,13 @@ func initialise_enemy():
 func game_turn():
 	if !playersTurn:
 		print("enemy turn")
-		#var enemyMove = enemy.get_move(board.get_node("Grid"))
+		enemy.get_move(board.get_node("Grid"))
 		#print("enemy move: ", enemyMove)
 		#if enemyMove == []:
 			#play_made([], [])
 		var grid = board.get_node("Grid")
 		var validLocations = enemy.get_valid_locations(grid)
 		var rack = enemy.get_rack()
-		playFinder.get_best_move(validLocations, grid, rack)
 	else:
 		print("player turn")
 

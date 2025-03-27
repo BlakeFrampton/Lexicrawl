@@ -100,11 +100,14 @@ func move_tile():
 							if (boardTile.position.x<= mousePos.x && boardTile.position.x + TILESIZE >= mousePos.x && boardTile.position.y<= mousePos.y && boardTile.position.y+ TILESIZE  >= mousePos.y):
 								stillOnTile = true
 	if stillOnTile and not currentBoardTile == null:
-		position = get_board_tile_position(currentBoardTile)
+		place_on_board_tile(currentBoardTile)
 	if (not currentBoardTile == null) and !stillOnTile:
 		currentBoardTile.set_letter_tile(null)
 		currentBoardTile.set_occupancy("Empty")
 		currentBoardTile = null
+
+func place_on_board_tile(boardTile):
+	position = get_board_tile_position(boardTile)
 
 func get_board_tile_position(boardTile):
 	return Vector2(boardTile.position.x + TILESIZE /2, boardTile.position.y + TILESIZE /2)

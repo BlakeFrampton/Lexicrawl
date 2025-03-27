@@ -34,26 +34,39 @@ func get_best_move(validLocations, grid, rack):
 	var bestMove = null
 	var bestScore = 0
 	for move in validMoves:
-		print(move)
-		#get score, but need to place tiles first.
+		for placement in move:
+			grid.place_tile(placement[0], placement[1], placement[2])
+		var wordsToScore = grid.get_words_to_score()
+		var score = playScorer.calculate_score(wordsToScore)
+		if score > bestScore:
+			bestScore = score
+			bestMove = move
+			print("New best: ", bestScore)
+		grid.unoccupy_board_tiles()
+	print("Best score: ", bestScore)
+	for placement in bestMove:
+		var tile = placement[0]
+		grid.place_tile(tile, placement[1], placement[2])
+		tile.place_on_board_tile(tile.get_current_board_tile())
+	#playScorer.animate_score(bestMove)
 	
 
 
 func generate_moves(validLocations, grid, rack):
 	for location in validLocations:
 		var boardTile = grid.get_board_tile(location[0], location[1])
-		generate_moves_from_point(grid, rack, location, boardTile, gaddag, "", 0, true, true)
-		generate_moves_from_point(grid, rack, location, boardTile, gaddag, "", 0, false, true)
+		generate_moves_from_point(grid, rack, location, boardTile, gaddag, "", [], true, true)
+		generate_moves_from_point(grid, rack, location, boardTile, gaddag, "", [], false, true)
 
-func generate_moves_from_point(grid, rack, rootCoords, anchor, node, word, placedTiles, isHorizontal, isBackwards):
+func generate_moves_from_point(grid, rack, rootCoords, anchor, node, word, tilePlacements, isHorizontal, isBackwards):
 	var coords = grid.get_coordinates(anchor)
 	var x = coords[0]
 	var y = coords[1]
 	
 	
 	#If currently on a complete and valid word
-	if "*" in node.keys() and placedTiles > 0:
-		validMoves.append({"word": word, "pos": anchor})
+	if "*" in node.keys() and len(tilePlacements) > 0:
+		validMoves.append(tilePlacements)
 	
 	#Iterate over every child in tree
 	for letter in node.keys():
@@ -63,7 +76,7 @@ func generate_moves_from_point(grid, rack, rootCoords, anchor, node, word, place
 		
 		if letter == "-":
 			var boardTile = grid.get_board_tile(rootCoords[0] - int(isHorizontal), rootCoords[1] - int(!isHorizontal))
-			generate_moves_from_point(grid, rack, rootCoords, boardTile, node["-"], word, placedTiles, isHorizontal, false)
+			generate_moves_from_point(grid, rack, rootCoords, boardTile, node["-"], word, tilePlacements.duplicate(), isHorizontal, false)
 		
 		var anchorTile = null
 		if anchor:
@@ -76,7 +89,7 @@ func generate_moves_from_point(grid, rack, rootCoords, anchor, node, word, place
 		if anchorTile != null:
 			if anchorTileLabel == letter:
 				if grid.is_valid_coords(x+int(isHorizontal), y+int(!isHorizontal)):
-					generate_moves_from_point(grid, rack, rootCoords, grid.get_board_tile(x+int(isHorizontal), y+int(!isHorizontal)), node[letter], new_word(word, letter, isBackwards), placedTiles, isHorizontal, isBackwards)
+					generate_moves_from_point(grid, rack, rootCoords, grid.get_board_tile(x+int(isHorizontal), y+int(!isHorizontal)), node[letter], new_word(word, letter, isBackwards), tilePlacements.duplicate(), isHorizontal, isBackwards)
 			else:
 				#If there is a tile placed but it is not a valid option for this subtree, abandon it
 				if !anchorTileLabel in node.keys():
@@ -87,7 +100,9 @@ func generate_moves_from_point(grid, rack, rootCoords, anchor, node, word, place
 					var new_rack = rack.duplicate()
 					new_rack.erase(tile)
 					if grid.is_valid_coords(x+int(isHorizontal), y+int(!isHorizontal)):
-						generate_moves_from_point(grid, new_rack, rootCoords, grid.get_board_tile(x+int(isHorizontal), y+int(!isHorizontal)), node[letter], new_word(word, letter, isBackwards), placedTiles + 1, isHorizontal, isBackwards)
+						var newTilePlacements = tilePlacements.duplicate()
+						newTilePlacements.append([tile, x, y])
+						generate_moves_from_point(grid, new_rack, rootCoords, grid.get_board_tile(x+int(isHorizontal), y+int(!isHorizontal)), node[letter], new_word(word, letter, isBackwards), newTilePlacements, isHorizontal, isBackwards)
 
 func new_word(word, letter, isBackwards):
 	if isBackwards:

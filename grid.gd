@@ -240,6 +240,7 @@ func get_directional_words_played(deltaX, deltaY, newTiles):
 
 func submit_play():
 	var wordsToScore = get_words_to_score()
+	print("Words to score: ", wordsToScore)
 	var tilesUsed = []
 	if wordsToScore != []:
 		for x in range(GRIDSIZE):
@@ -258,9 +259,19 @@ func unoccupy_board_tiles():
 		for y in range(GRIDSIZE):
 			if boardTiles[x][y].get_occupancy() == "New":
 				boardTiles[x][y].set_occupancy("Empty")
+				var letterTile = boardTiles[x][y].get_letter_tile()
+				boardTiles[x][y].set_letter_tile(null)
+				if letterTile:
+					letterTile.set_current_board_tile(null)
 
 func is_valid_coords(x, y):
 	if x < GRIDSIZE and x >= 0:
 		if y < GRIDSIZE and y >= 0:
 			return true
 	return false
+	
+func place_tile(tile, x, y):
+	var boardTile = get_board_tile(x,y)
+	boardTile.set_occupancy("New")
+	boardTile.set_letter_tile(tile)
+	tile.set_current_board_tile(boardTile)

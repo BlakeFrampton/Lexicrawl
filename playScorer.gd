@@ -2,13 +2,14 @@ extends Node
 var animations = []
 
 func animate_score(wordsToScore, scoreLabel):
-	calculate_score(wordsToScore)
+	var score = calculate_score(wordsToScore)
 	print(animations)
 	for event in animations:
 		for tile in event[0]:
 			tile.pulse_and_rotate(0.5)
 		scoreLabel.text = "Score: " + str(event[1])
 		await wait(0.5)
+	return score
 
 func calculate_score(wordsToScore):
 	var totalScore = 0
