@@ -258,3 +258,9 @@ func unoccupy_board_tiles():
 		for y in range(GRIDSIZE):
 			if boardTiles[x][y].get_occupancy() == "New":
 				boardTiles[x][y].set_occupancy("Empty")
+
+func is_valid_coords(x, y):
+	if x < GRIDSIZE and x >= 0:
+		if y < GRIDSIZE and y >= 0:
+			return true
+	return false

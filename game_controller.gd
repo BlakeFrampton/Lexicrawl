@@ -31,5 +31,5 @@ func spawn_player():
 func spawn_battle():
 	battle = battlePath.instantiate()
 	battle.set_values(TILESIZE, TILEBORDER, GRIDSIZE, player)
-	battle.initialise()
+	#battle.initialise()
 	add_child(battle)
