@@ -42,8 +42,8 @@ func get_best_move(validLocations, grid, rack):
 func generate_moves(validLocations, grid, rack):
 	for location in validLocations:
 		var boardTile = grid.get_board_tile(location[0], location[1])
-		generate_moves_from_point(grid, rack, location, boardTile, gaddag, "", 0, true, false)
-		generate_moves_from_point(grid, rack, location, boardTile, gaddag, "", 0, false, false)
+		generate_moves_from_point(grid, rack, location, boardTile, gaddag, "", 0, true, true)
+		generate_moves_from_point(grid, rack, location, boardTile, gaddag, "", 0, false, true)
 
 func generate_moves_from_point(grid, rack, rootCoords, anchor, node, word, placedTiles, isHorizontal, isBackwards):
 	var coords = grid.get_coordinates(anchor)
@@ -63,7 +63,7 @@ func generate_moves_from_point(grid, rack, rootCoords, anchor, node, word, place
 		
 		if letter == "-":
 			var boardTile = grid.get_board_tile(rootCoords[0] - int(isHorizontal), rootCoords[1] - int(!isHorizontal))
-			generate_moves_from_point(grid, rack, rootCoords, boardTile, node["-"], word, placedTiles, isHorizontal, true)
+			generate_moves_from_point(grid, rack, rootCoords, boardTile, node["-"], word, placedTiles, isHorizontal, false)
 		
 		var anchorTile = null
 		if anchor:
