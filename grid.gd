@@ -115,6 +115,7 @@ func get_board_tile(x,y):
 
 func get_words_to_score():
 	var words = get_words_played()
+	print(tiles_to_word(words[0]))
 	
 	for word in words:
 		if not word_is_valid(tiles_to_word(word)):
@@ -240,7 +241,6 @@ func get_directional_words_played(deltaX, deltaY, newTiles):
 
 func submit_play():
 	var wordsToScore = get_words_to_score()
-	print("Words to score: ", wordsToScore)
 	var tilesUsed = []
 	if wordsToScore != []:
 		for x in range(GRIDSIZE):

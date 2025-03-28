@@ -7,6 +7,13 @@ var tiles = []
 
 
 func _init():
+	#add_tiles("J", 1)
+	#add_tiles("O", 1)
+	#add_tiles("C", 1)
+	#add_tiles("K", 1)
+	#add_tiles("I", 1)
+	#add_tiles("S", 1)
+	#add_tiles("H", 1)
 	add_standard_tiles()
 
 func set_values(tileSize, player):
