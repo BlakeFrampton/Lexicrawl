@@ -32,10 +32,12 @@ func get_best_move(validLocations, grid, rack):
 	var bestMove = null
 	var bestScore = 0
 	for move in validMoves:
+		var tilesUsed = []
 		for placement in move:
+			tilesUsed.append(placement[0])
 			grid.place_tile(placement[0], placement[1], placement[2])
 		var wordsToScore = grid.get_words_to_score()
-		var score = playScorer.calculate_score(wordsToScore)
+		var score = playScorer.calculate_score(wordsToScore, tilesUsed)
 		if score > bestScore:
 			bestScore = score
 			bestMove = move

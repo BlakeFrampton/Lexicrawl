@@ -68,10 +68,14 @@ func game_turn():
 		var rack = enemy.get_rack()
 	else:
 		print("player turn")
+		print("neo vim working")
 
 
 func play_made(wordsToScore, tilesUsed):
-	await playScorer.animate_score(wordsToScore, %Score)
+	var scoreLabel = %Score
+	if !playersTurn:
+		scoreLabel = %EnemyScore
+	await playScorer.animate_score(wordsToScore, scoreLabel, tilesUsed)
 	remove_board_multipliers(wordsToScore)
 	
 	playersTurn = !playersTurn

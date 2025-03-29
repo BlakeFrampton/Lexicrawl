@@ -1,8 +1,8 @@
 extends Node
 var animations = []
 
-func animate_score(wordsToScore, scoreLabel):
-	var score = calculate_score(wordsToScore)
+func animate_score(wordsToScore, scoreLabel, tilesPlayed):
+	var score = calculate_score(wordsToScore, tilesPlayed)
 	print(animations)
 	for event in animations:
 		for tile in event[0]:
@@ -10,13 +10,15 @@ func animate_score(wordsToScore, scoreLabel):
 		scoreLabel.text = "Score: " + str(event[1])
 		await wait(0.5)
 	return score
+	
 
-func calculate_score(wordsToScore):
+func calculate_score(wordsToScore, tilesPlayed):
 	var totalScore = 0
 	animations = []
 	for word in wordsToScore:
 		totalScore += score_word(word, totalScore, animations)
 	animations.append([[], totalScore])
+	totalScore = bingoCheck(tilesPlayed, totalScore)
 	return totalScore
 
 func score_word(word, totalScore, animations):
@@ -33,5 +35,14 @@ func score_word(word, totalScore, animations):
 	
 	return score * multiplier
 	
+func bingoCheck(tilesPlayed, score):
+	var bingoLength = 7
+	var bingoScore = 50
+	if len(tilesPlayed) >= bingoLength:
+		score += bingoScore
+		animations.append([tilesPlayed, score])
+	return score
+		
+
 func wait(seconds):
 	await get_tree().create_timer(seconds).timeout
