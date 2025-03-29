@@ -115,8 +115,6 @@ func get_board_tile(x,y):
 
 func get_words_to_score():
 	var words = get_words_played()
-	print(tiles_to_word(words[0]))
-	
 	for word in words:
 		if not word_is_valid(tiles_to_word(word)):
 			return []

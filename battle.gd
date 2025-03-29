@@ -61,7 +61,6 @@ func game_turn():
 	if !playersTurn:
 		print("enemy turn")
 		enemy.get_move(board.get_node("Grid"))
-		#print("enemy move: ", enemyMove)
 		#if enemyMove == []:
 			#play_made([], [])
 		var grid = board.get_node("Grid")
@@ -72,10 +71,6 @@ func game_turn():
 
 
 func play_made(wordsToScore, tilesUsed):
-	print("play:")
-	for word in wordsToScore:
-		print(tiles_to_word(word))
-	
 	await playScorer.animate_score(wordsToScore, %Score)
 	remove_board_multipliers(wordsToScore)
 	
