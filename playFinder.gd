@@ -24,13 +24,21 @@ func search(sequence):
 			return false
 	return "*" in node  # Check if it's a full word
 
-func get_best_move(validLocations, grid, rack):
+func enemy_play_move(validLocations, grid, rack, targetScore, acceptableRange):
+	var move = get_move(validLocations, grid, rack, targetScore, acceptableRange)
+	for placement in move:
+		var tile = placement[0]
+		grid.place_tile(tile, placement[1], placement[2])
+		tile.place_on_board_tile(tile.get_current_board_tile())
+	#playScorer.animate_score(bestMove)
+
+func get_move(validLocations, grid, rack, targetScore, acceptableRange):
 	print("getting moves")
 	validMoves = []
 	generate_moves(validLocations, grid, rack)
 	print("got moves")
-	var bestMove = null
-	var bestScore = 0
+	var closestMove = null
+	var minScoreDifference = 1000
 	for move in validMoves:
 		var tilesUsed = []
 		for placement in move:
@@ -38,18 +46,16 @@ func get_best_move(validLocations, grid, rack):
 			grid.place_tile(placement[0], placement[1], placement[2])
 		var wordsToScore = grid.get_words_to_score()
 		var score = playScorer.calculate_score(wordsToScore, tilesUsed)
-		if score > bestScore:
-			bestScore = score
-			bestMove = move
+		var scoreDifference = abs(targetScore - score)
+		if scoreDifference < minScoreDifference:
+			if scoreDifference <= acceptableRange:
+				grid.unoccupy_board_tiles()
+				return move
+			minScoreDifference = scoreDifference
+			closestMove = move
 		grid.unoccupy_board_tiles()
-	print("Best score: ", bestScore)
-	for placement in bestMove:
-		var tile = placement[0]
-		grid.place_tile(tile, placement[1], placement[2])
-		tile.place_on_board_tile(tile.get_current_board_tile())
-	#playScorer.animate_score(bestMove)
+	return closestMove
 	
-
 
 func generate_moves(validLocations, grid, rack):
 	for location in validLocations:

@@ -72,6 +72,7 @@ func game_turn():
 
 
 func play_made(wordsToScore, tilesUsed):
+	print("play made")
 	var scoreLabel = %Score
 	if !playersTurn:
 		scoreLabel = %EnemyScore

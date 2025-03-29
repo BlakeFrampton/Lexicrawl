@@ -13,6 +13,7 @@ var tileBag
 
 var searches = 0
 	
+
 func set_values(tileSize, tileBorder, gridSize, targetScore, acceptableRange):
 	TILESIZE = tileSize
 	TILEBORDER = tileBorder
@@ -50,7 +51,7 @@ func print_rack():
 func get_move(grid):
 	print_rack()
 	var validLocations = get_valid_locations(grid)
-	playFinder.get_best_move(validLocations, grid, rack)
+	playFinder.enemy_play_move(validLocations, grid, rack, 30, 5)
 	
 	print("Submitting play")
 	grid.submit_play()

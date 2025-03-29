@@ -239,6 +239,7 @@ func get_directional_words_played(deltaX, deltaY, newTiles):
 
 func submit_play():
 	var wordsToScore = get_words_to_score()
+	print("words to score: ", len(wordsToScore))
 	var tilesUsed = []
 	if wordsToScore != []:
 		for x in range(GRIDSIZE):
