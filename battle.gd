@@ -100,7 +100,6 @@ func remove_board_multipliers(wordsPlayed):
 	for word in wordsPlayed:
 		for tile in word:
 			var boardTile = tile.get_current_board_tile()
-			var coords = board.get_node("Grid").get_coordinates(boardTile)
 			boardTile.set_square_multiplier(1, "word")
 			boardTile.set_square_multiplier(1, "letter")
 

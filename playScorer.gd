@@ -16,12 +16,12 @@ func calculate_score(wordsToScore, tilesPlayed):
 	var totalScore = 0
 	animations = []
 	for word in wordsToScore:
-		totalScore += score_word(word, totalScore, animations)
+		totalScore += score_word(word, totalScore)
 	animations.append([[], totalScore])
 	totalScore = bingoCheck(tilesPlayed, totalScore)
 	return totalScore
 
-func score_word(word, totalScore, animations):
+func score_word(word, totalScore):
 	var score = 0
 	var multiplier = 1
 	for tile in word:
