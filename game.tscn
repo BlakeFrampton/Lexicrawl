@@ -1,7 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://ckixnxuy4l8ha"]
+[gd_scene load_steps=3 format=3 uid="uid://ckixnxuy4l8ha"]
 
+[ext_resource type="Texture2D" uid="uid://dflreckhfw6ta" path="res://woodBackground.png" id="2_txlby"]
 [ext_resource type="Script" path="res://game_controller.gd" id="3_aua3w"]
 
 [node name="Game" type="Node2D"]
 y_sort_enabled = true
 script = ExtResource("3_aua3w")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+z_index = -100
+z_as_relative = false
+texture_filter = 3
+offset_right = 2647.0
+offset_bottom = 1489.0
+texture = ExtResource("2_txlby")
+stretch_mode = 4

@@ -15,6 +15,7 @@ var multiplier = 1
 var player
 var dragging = false
 var awaitingLetter = false
+var buttonDown = false
 
 func set_values(title, label, tileSize, value, multiplier, player=null):
 	TILESIZE = tileSize
@@ -29,26 +30,39 @@ func _process(delta):
 		if currentBoardTile == null or currentBoardTile.get_occupancy() != "Occupied":
 			move_tile()
 
+func _on_input_event(viewport, event, shape_idx):
+	print("input event")
+	if event is InputEventMouseButton:
+		print("Mouse button event at: ", event.position, " | Button: ", event.button_index, " | Pressed: ", event.pressed)
+
 func _input(event):
 	if player:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #Detects button pressed or lifted
-			if Input.is_action_pressed("left_click"): #Button pressed
+			print(buttonDown)
+			if !buttonDown:
+				print("move")
 				tile_movement()
-			elif player.get_dragging():
-				player.set_dragging(false)
-				dragging = false
+			else:
+				print("in if statement")
+				if player.get_dragging():
+					print("dragging")
+					player.set_dragging(false)
+					dragging = false
+			buttonDown = !buttonDown
 
 func tile_movement():
 	if hoveringMe():
-					if exchanging:
-						exchangeThisTile = !exchangeThisTile
-						set_exchange_colour()
-					elif player.get_dragging() == false:
-						dragging = true
-						player.set_dragging(true) #Stores whether any tile is being dragged, to avoid multiple tiles being held at once
-						dragTileStartPosition = position
-						dragMouseStartPosition = get_global_mouse_position()
-						move_to_front() #Move to front of canvas
+		if exchanging:
+			print("exchanging")
+			exchangeThisTile = !exchangeThisTile
+			set_exchange_colour()
+		elif player.get_dragging() == false:
+			print("dragging = true")
+			dragging = true
+			player.set_dragging(true) #Stores whether any tile is being dragged, to avoid multiple tiles being held at once
+			dragTileStartPosition = position
+			dragMouseStartPosition = get_global_mouse_position()
+			move_to_front() #Move to front of canvas
 
 func _unhandled_input(event):
 	if awaitingLetter and event is InputEventKey and event.pressed:
@@ -76,8 +90,8 @@ func get_exchange_this_tile():
 
 func hoveringMe():
 	var mousePos = get_global_mouse_position()
-	var spriteSize = get_node("Sprite2D").texture.get_width() * scale.x
-	var collisionShape2d = get_node("Area2D/CollisionShape2D")
+	var spriteSize = get_node("Sprite").texture.get_width() * get_node("Sprite").scale.x
+	print("spriteSize: ", spriteSize)
 	if (global_position.x -spriteSize/2<= mousePos.x && global_position.x + spriteSize/2 >= mousePos.x && global_position.y -spriteSize/2<= mousePos.y && global_position.y + spriteSize/2 >= mousePos.y):
 		return true
 	return false
@@ -190,16 +204,15 @@ func get_title():
 func pulse_and_rotate(duration):
 	move_to_front()
 	var tween = get_tree().create_tween()
-	var sprite = get_node("Sprite2D")
 	const SCALE = 1.5
 	# Scale up to 130% and rotate 30 degrees in 0.25s
-	tween.parallel().tween_property(sprite, "scale", Vector2(SCALE, SCALE), duration / 2).set_trans(Tween.TRANS_SINE)
-	tween.parallel().tween_property(sprite, "rotation_degrees", 30, duration / 2).set_trans(Tween.TRANS_SINE)
+	tween.parallel().tween_property(self, "scale", Vector2(SCALE, SCALE), duration / 2).set_trans(Tween.TRANS_SINE)
+	tween.parallel().tween_property(self, "rotation_degrees", 30, duration / 2).set_trans(Tween.TRANS_SINE)
 	
 	#tween.chain()
 	## Scale back to 100% and rotate back to 0 in the next 0.25s
-	tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), duration / 2).set_delay(duration/2).set_trans(Tween.TRANS_SINE)
-	tween.parallel().tween_property(sprite, "rotation_degrees", 0, duration / 2).set_delay(duration/2).set_trans(Tween.TRANS_SINE)
+	tween.parallel().tween_property(self, "scale", Vector2(1.0, 1.0), duration / 2).set_delay(duration/2).set_trans(Tween.TRANS_SINE)
+	tween.parallel().tween_property(self, "rotation_degrees", 0, duration / 2).set_delay(duration/2).set_trans(Tween.TRANS_SINE)
 
 func get_current_board_tile():
 	return currentBoardTile
