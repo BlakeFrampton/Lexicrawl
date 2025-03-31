@@ -26,6 +26,8 @@ func initialise():
 			boardTiles[x][y].position=Vector2(startingX + x * (TILESIZE + TILEBORDER), startingY + y * (TILESIZE + TILEBORDER))
 			boardTiles[x][y].get_multiplier_label().size = Vector2(TILESIZE, TILESIZE)
 			boardTiles[x][y].get_color_rect().size = Vector2(TILESIZE, TILESIZE)
+			var sprite = boardTiles[x][y].get_sprite()
+			sprite.scale = Vector2(TILESIZE / sprite.texture.get_width() , TILESIZE / sprite.texture.get_width())
 			boardTiles[x][y].set_square_multiplier(1, "word")
 
 			add_child(boardTiles[x][y])

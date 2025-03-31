@@ -41,6 +41,9 @@ func get_multiplier_label():
 func get_color_rect():
 	return %ColorRect
 
+func get_sprite():
+	return %Sprite
+
 func set_square_multiplier(multiplier, multiplierType):
 	if multiplier > 1:
 		if multiplierType == "word":
@@ -48,17 +51,22 @@ func set_square_multiplier(multiplier, multiplierType):
 			get_multiplier_label().text = str(multiplier) + "W"
 			if multiplier == 2:
 				get_color_rect().color = DOUBLEWORDCOLOUR
+				get_sprite().modulate = DOUBLEWORDCOLOUR
 			elif multiplier == 3:
 				get_color_rect().color = TRIPLEWORDCOLOUR
+				get_sprite().modulate = TRIPLEWORDCOLOUR
 		elif multiplierType == "letter":
 			set_letter_multiplier(multiplier)
 			get_multiplier_label().text = str(multiplier) + "L"
 			if multiplier == 2:
 				get_color_rect().color = DOUBLELETTERCOLOUR
+				get_sprite().modulate = DOUBLELETTERCOLOUR
 			elif multiplier == 3:
 				get_color_rect().color = TRIPLELETTERCOLOUR
+				get_sprite().modulate = TRIPLELETTERCOLOUR
 	else:
 		get_color_rect().color = STANDARDBOARDCOLOUR
+		get_sprite().modulate = STANDARDBOARDCOLOUR
 		get_multiplier_label().text = ""
 		wordMultiplier = 1
 		letterMultiplier = 1
