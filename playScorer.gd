@@ -3,7 +3,6 @@ var animations = []
 
 func animate_score(wordsToScore, scoreLabel, tilesPlayed):
 	var score = calculate_score(wordsToScore, tilesPlayed)
-	print(animations)
 	for event in animations:
 		for tile in event[0]:
 			tile.pulse_and_rotate(0.5)

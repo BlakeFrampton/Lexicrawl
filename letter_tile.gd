@@ -30,22 +30,13 @@ func _process(delta):
 		if currentBoardTile == null or currentBoardTile.get_occupancy() != "Occupied":
 			move_tile()
 
-func _on_input_event(viewport, event, shape_idx):
-	print("input event")
-	if event is InputEventMouseButton:
-		print("Mouse button event at: ", event.position, " | Button: ", event.button_index, " | Pressed: ", event.pressed)
-
 func _input(event):
 	if player:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #Detects button pressed or lifted
-			print(buttonDown)
 			if !buttonDown:
-				print("move")
 				tile_movement()
 			else:
-				print("in if statement")
 				if player.get_dragging():
-					print("dragging")
 					player.set_dragging(false)
 					dragging = false
 			buttonDown = !buttonDown
@@ -53,11 +44,9 @@ func _input(event):
 func tile_movement():
 	if hoveringMe():
 		if exchanging:
-			print("exchanging")
 			exchangeThisTile = !exchangeThisTile
 			set_exchange_colour()
 		elif player.get_dragging() == false:
-			print("dragging = true")
 			dragging = true
 			player.set_dragging(true) #Stores whether any tile is being dragged, to avoid multiple tiles being held at once
 			dragTileStartPosition = position
@@ -91,7 +80,6 @@ func get_exchange_this_tile():
 func hoveringMe():
 	var mousePos = get_global_mouse_position()
 	var spriteSize = get_node("Sprite").texture.get_width() * get_node("Sprite").scale.x
-	print("spriteSize: ", spriteSize)
 	if (global_position.x -spriteSize/2<= mousePos.x && global_position.x + spriteSize/2 >= mousePos.x && global_position.y -spriteSize/2<= mousePos.y && global_position.y + spriteSize/2 >= mousePos.y):
 		return true
 	return false
